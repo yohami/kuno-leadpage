@@ -902,7 +902,7 @@ document.addEventListener('click', function(e) {
   if (typeof fbq !== 'undefined') fbq('track', 'InitiateCheckout', {value: isHardcover ? 97 : 47, currency: 'USD'});
   btn.disabled = true;
   btn.style.opacity = '0.7';
-  fetch('https://ku-no.com/api/checkout/create-session', {
+  fetch('/api/checkout/create-session', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ config: { priceId, mode, successUrl, cancelUrl, gclid } })
