@@ -325,7 +325,7 @@ window.addEventListener('DOMContentLoaded', () => {
     <div style="font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.25em;text-transform:uppercase;color:rgb(23,97,131);margin-bottom:1rem;">Limited Launch Offer — $47 USD</div>
     <div style="display:flex;flex-direction:row;gap:1rem;flex-wrap:wrap;justify-content:center;">
       <a href="#" id="btn-buy-ebook" data-checkout="" data-price-id="price_1TT82JD1kWb245oCRPE0Eptv" data-product-name="KU/NO Ebook" data-mode="payment" data-success-url="https://ku-no.com/thankyou" target="_blank" rel="noopener" class="btn-cta" onclick="trackCTA('click_buy_ebook','InitiateCheckout',{value:47,currency:'USD'})" style="position:relative;overflow:hidden;display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;padding:1rem 2rem;background:#C00000;color:#fff;text-decoration:none;width:280px;text-align:center;"><span>Buy Ebook — $47</span></a>
-      <a href="https://mixam.com/print-on-demand/69f0a4f41195e550efb48caf" id="btn-hardcover" target="_blank" rel="noopener" class="btn-cta" onclick="trackCTA('click_hardcover','InitiateCheckout',{value:97,currency:'USD'})" style="position:relative;overflow:hidden;display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;padding:1rem 2rem;background:#C00000;color:#fff;text-decoration:none;width:280px;text-align:center;"><span>Hardcover — $97</span></a>
+      <a href="https://circle.ku-no.com/order/ku-no-hardcover?src=leadpage" id="btn-hardcover" rel="noopener" class="btn-cta kuno-hardcover-link" onclick="trackCTA('click_hardcover','InitiateCheckout',{value:97,currency:'USD'})" style="position:relative;overflow:hidden;display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;padding:1rem 2rem;background:#C00000;color:#fff;text-decoration:none;width:280px;text-align:center;"><span>Hardcover — $97</span></a>
       <a href="/personalitytest" target="_blank" rel="noopener"  class="btn-cta btn-outline" style="position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:0.7rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;padding:1rem 2rem;background:transparent;color:rgb(23,97,131);border:1px solid rgb(23,97,131);text-decoration:none;width:280px;text-align:center;" onclick="trackCTA('click_take_test','ViewContent',{content_name:'Personality Test'})"><span class="btn-outline-text">Take the Personality Test</span></a>
     </div>
   </div>
@@ -824,7 +824,7 @@ window.addEventListener('DOMContentLoaded', () => {
     
   <div class="hero-ctas" style="display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 1rem; flex-wrap: wrap;">
     <a href="#" id="btn-buy-ebook-2" data-checkout="" data-price-id="price_1TT82JD1kWb245oCRPE0Eptv" data-product-name="KU/NO Ebook" data-mode="payment" data-success-url="https://ku-no.com/thankyou" target="_blank" rel="noopener" class="btn-cta" onclick="trackCTA('click_buy_ebook','InitiateCheckout',{value:47,currency:'USD'})" style="position:relative;overflow:hidden;display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;padding:1rem 2rem;background:#C00000;color:#fff;text-decoration:none;width:220px;text-align:center;"><span>Buy Ebook — $47</span></a>
-    <a href="https://mixam.com/print-on-demand/69f0a4f41195e550efb48caf" id="btn-hardcover-2" target="_blank" rel="noopener" class="btn-cta" onclick="trackCTA('click_hardcover','InitiateCheckout',{value:97,currency:'USD'})" style="position:relative;overflow:hidden;display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;padding:1rem 2rem;background:#C00000;color:#fff;text-decoration:none;width:220px;text-align:center;"><span>Hardcover — $97</span></a>
+    <a href="https://circle.ku-no.com/order/ku-no-hardcover?src=leadpage" id="btn-hardcover-2" rel="noopener" class="btn-cta kuno-hardcover-link" onclick="trackCTA('click_hardcover','InitiateCheckout',{value:97,currency:'USD'})" style="position:relative;overflow:hidden;display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;padding:1rem 2rem;background:#C00000;color:#fff;text-decoration:none;width:220px;text-align:center;"><span>Hardcover — $97</span></a>
     
   </div>
 
@@ -880,12 +880,42 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
 <script>
-// Capture GCLID from URL and store in sessionStorage
+// Capture click ids from URL and store in sessionStorage so we can
+// forward them into Stripe metadata at checkout time (needed for
+// Meta CAPI + Google Ads attribution when the buyer lands via an ad).
 (function() {
   const params = new URLSearchParams(window.location.search);
   const gclid = params.get('gclid');
   if (gclid) sessionStorage.setItem('gclid', gclid);
+  const fbclid = params.get('fbclid');
+  if (fbclid) sessionStorage.setItem('fbclid', fbclid);
 })();
+
+// Forward fbclid + gclid to the hardcover order links on circle.ku-no.com
+// so ad attribution survives the cross-subdomain jump. The circle
+// /order page reads ?fbclid= on load and stamps it into the CAPI event
+// when the buyer completes checkout.
+(function() {
+  const fbclid = sessionStorage.getItem('fbclid') || new URLSearchParams(location.search).get('fbclid');
+  const gclid = sessionStorage.getItem('gclid') || new URLSearchParams(location.search).get('gclid');
+  if (!fbclid && !gclid) return;
+  document.querySelectorAll('.kuno-hardcover-link').forEach(function(a) {
+    try {
+      const url = new URL(a.href);
+      if (fbclid) url.searchParams.set('fbclid', fbclid);
+      if (gclid) url.searchParams.set('gclid', gclid);
+      a.href = url.toString();
+    } catch (e) { /* ignore malformed href */ }
+  });
+})();
+
+// Read a specific cookie value by name. Meta's browser Pixel writes
+// _fbp on init; forwarding it to the server → Stripe metadata → CAPI
+// gives Meta a strong dedup + match signal.
+function readCookie(name) {
+  const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+  return match ? decodeURIComponent(match[1]) : null;
+}
 
 // Checkout handler
 document.addEventListener('click', function(e) {
@@ -897,6 +927,8 @@ document.addEventListener('click', function(e) {
   const successUrl = btn.getAttribute('data-success-url') || 'https://ku-no.com/thankyou';
   const cancelUrl = 'https://ku-no.com';
   const gclid = sessionStorage.getItem('gclid') || null;
+  const fbclid = sessionStorage.getItem('fbclid') || null;
+  const fbp = readCookie('_fbp');
   const productName = btn.getAttribute('data-product-name') || '';
   const isHardcover = productName.toLowerCase().includes('hardcover');
   if (typeof fbq !== 'undefined') fbq('track', 'InitiateCheckout', {value: isHardcover ? 97 : 47, currency: 'USD'});
@@ -905,7 +937,7 @@ document.addEventListener('click', function(e) {
   fetch('/api/checkout/create-session', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ config: { priceId, mode, successUrl, cancelUrl, gclid } })
+    body: JSON.stringify({ config: { priceId, mode, successUrl, cancelUrl, gclid, fbclid, fbp } })
   })
   .then(r => r.json())
   .then(data => { if (data.url) window.location.href = data.url; })
