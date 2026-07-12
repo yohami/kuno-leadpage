@@ -508,7 +508,58 @@ s.parentNode.insertBefore(t,s)}(window, document,'script',
 'https://connect.facebook.net/en_US/fbevents.js');
 fbq('init', '3466139423544608');
 fbq('track', 'PageView');
-fbq('track', 'Purchase', {value: 47.00, currency: 'USD'});
+// Purchase event with:
+//   - eventID = Stripe session id (dedupes against the server CAPI
+//     Purchase fired from circle.ku-no.com/api/webhook so this sale
+//     counts ONCE, not twice)
+//   - Advanced Matching (hashed email + name) — fetched from the
+//     server after we look up the Stripe session by id. Bumps Meta
+//     match quality from Fair to Good/Great.
+// Fetch has a 3s timeout: if it's slow, fire without matching so
+// we don't lose the event when a buyer closes the tab early. Meta
+// hashes em/fn/ln client-side with SHA-256 before sending.
+(function () {
+  var PIXEL_ID = '3466139423544608';
+  var sid = new URLSearchParams(location.search).get('session_id');
+  var params = {value: 47.00, currency: 'USD'};
+  if (!sid) {
+    // Buyer landed via direct link / refresh / cleared URL. Fire
+    // without dedup — better than dropping the event.
+    fbq('track', 'Purchase', params);
+    return;
+  }
+
+  var fired = false;
+  function firePurchase(matching) {
+    if (fired) return;
+    fired = true;
+    if (matching && (matching.em || matching.fn || matching.ln)) {
+      // Re-init the pixel with matching so THIS event (and any
+      // subsequent ones on this page) carries hashed identity.
+      fbq('init', PIXEL_ID, matching);
+    }
+    fbq('track', 'Purchase', params, {eventID: sid});
+  }
+
+  var timeoutId = setTimeout(function () { firePurchase(null); }, 3000);
+  fetch('/api/checkout/session-details?id=' + encodeURIComponent(sid))
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (data) {
+      clearTimeout(timeoutId);
+      var matching = {};
+      if (data && data.email) matching.em = String(data.email).trim().toLowerCase();
+      if (data && data.name) {
+        var parts = String(data.name).trim().split(/\s+/);
+        if (parts[0]) matching.fn = parts[0].toLowerCase();
+        if (parts.length > 1) matching.ln = parts.slice(1).join(' ').toLowerCase();
+      }
+      firePurchase(matching);
+    })
+    .catch(function () {
+      clearTimeout(timeoutId);
+      firePurchase(null);
+    });
+})();
 </script>
 <noscript><img height="1" width="1" style="display:none"
 src="https://www.facebook.com/tr?id=3466139423544608&ev=Purchase&noscript=1"
@@ -534,7 +585,7 @@ src="https://www.facebook.com/tr?id=3466139423544608&ev=Purchase&noscript=1"
       <span class="ku-upsell-amount" style="">$97</span>
       
     </div>
-    <a href="https://mixam.com/print-on-demand/69f0a4f41195e550efb48caf" target="_blank" rel="noopener" class="ku-upsell-btn" style="">Get the Hardcover</a>
+    <a href="https://circle.ku-no.com/order/ku-no-hardcover?src=leadpage-upsell" rel="noopener" class="ku-upsell-btn" style="">Get the Hardcover</a>
     <p class="ku-upsell-skip" style="">No thanks, the ebook is enough for me.</p>
   </div>
 </div>
@@ -576,304 +627,8 @@ src="https://www.facebook.com/tr?id=3466139423544608&ev=Purchase&noscript=1"
   </div>
 </div>
 <div class="ku-footer" style="">© 2026 KU/NO — The Definitive System For Magnetism, Presence and Power</div>
-<script data-htmlpub-analytics="">
-(function(){
-var PID="u888qsnhs4v3pyuyvyafibuk";
-var EXP_ID="";
-var EXP_VARIANT="";
-var API="/collect";
-var FLUSH_INTERVAL=5000;
-var FLUSH_MAX=20;
-
-function uuid(){return"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,function(c){var r=Math.random()*16|0;return(c==="x"?r:(r&3|8)).toString(16)});}
-function getOrSet(store,key){try{var v=store.getItem(key);if(v)return v;v=uuid();store.setItem(key,v);return v;}catch(e){return uuid();}}
-
-var visitorId=getOrSet(localStorage,"_hp_vid");
-var sessionId=getOrSet(sessionStorage,"_hp_sid");
-
-var params=new URLSearchParams(location.search);
-var utmSource=params.get("utm_source")||undefined;
-var utmMedium=params.get("utm_medium")||undefined;
-var utmCampaign=params.get("utm_campaign")||undefined;
-
-var vw=window.innerWidth||0;
-var vh=window.innerHeight||0;
-var ua=navigator.userAgent||"";
-var isMobileUA=/Android|iPhone|iPod|iPad|webOS|BlackBerry|IEMobile|Opera Mini/i.test(ua);
-var maxScreenDim=Math.max(screen.width||0,screen.height||0);
-var deviceType=isMobileUA?(maxScreenDim<=812||vw<768?"mobile":"tablet"):"desktop";
-
-function detectBrowser(){
-if(ua.indexOf("Edg/")>-1)return"Edge";
-if(ua.indexOf("Chrome/")>-1)return"Chrome";
-if(ua.indexOf("Safari/")>-1&&ua.indexOf("Chrome/")===-1)return"Safari";
-if(ua.indexOf("Firefox/")>-1)return"Firefox";
-return"Other";
-}
-function detectOS(){
-if(ua.indexOf("iPhone")>-1||ua.indexOf("iPad")>-1)return"iOS";
-if(ua.indexOf("Android")>-1)return"Android";
-if(ua.indexOf("Mac OS")>-1)return"macOS";
-if(ua.indexOf("Windows")>-1)return"Windows";
-if(ua.indexOf("Linux")>-1)return"Linux";
-return"Other";
-}
-var browserFamily=detectBrowser();
-var osFamily=detectOS();
-
-var buffer=[];
-function makeEvent(type,payload){
-return{pageId:PID,eventType:type,visitorId:visitorId,sessionId:sessionId,payload:payload||undefined,referrer:document.referrer||undefined,utmSource:utmSource,utmMedium:utmMedium,utmCampaign:utmCampaign,deviceType:deviceType,browserFamily:browserFamily,osFamily:osFamily,viewportWidth:vw,viewportHeight:vh,experimentId:EXP_ID||undefined,experimentVariant:EXP_VARIANT||undefined,timestamp:Date.now()};
-}
-function pushEvent(type,payload){buffer.push(makeEvent(type,payload));if(buffer.length>=FLUSH_MAX)flush();}
-
-function readMmuid(){try{var v=localStorage.getItem("mmuid");return v&&v.length<=128?v:undefined;}catch(e){return undefined;}}
-
-function flush(){
-if(buffer.length===0)return;
-var batch=buffer.splice(0,FLUSH_MAX);
-var payload={events:batch};
-var mmuid=readMmuid();
-if(mmuid)payload.mmuid=mmuid;
-try{navigator.sendBeacon(API,JSON.stringify(payload));}catch(e){}
-}
-
-setInterval(flush,FLUSH_INTERVAL);
-document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden")flush();});
-window.addEventListener("pagehide",flush);
-
-pushEvent("page_view");
-
-var scrollMilestones={25:false,50:false,75:false,100:false};
-function checkScroll(){
-var docH=Math.max(document.body.scrollHeight,document.documentElement.scrollHeight);
-var scrollY=window.scrollY||window.pageYOffset;
-var winH=window.innerHeight;
-if(docH<=winH){if(!scrollMilestones[100]){scrollMilestones[100]=true;pushEvent("scroll_depth",{depth:100});}return;}
-var pct=Math.round(((scrollY+winH)/docH)*100);
-[25,50,75,100].forEach(function(m){if(pct>=m&&!scrollMilestones[m]){scrollMilestones[m]=true;pushEvent("scroll_depth",{depth:m});}});
-}
-window.addEventListener("scroll",checkScroll,{passive:true});
-setTimeout(checkScroll,1000);
-
-document.addEventListener("click",function(e){
-var el=e.target;
-if(!el||!el.tagName)return;
-var tag=el.tagName.toLowerCase();
-if(!(tag==="a"||tag==="button"||tag==="input"||tag==="select"||tag==="textarea"||el.getAttribute("role")==="button"||el.closest("a,button,[role=button]")))return;
-var docH=Math.max(document.body.scrollHeight,document.documentElement.scrollHeight,1);
-var rect=el.getBoundingClientRect();
-pushEvent("element_click",{x:Math.min(1,Math.max(0,(rect.left+rect.width/2)/(document.documentElement.clientWidth||1))),y:Math.min(1,Math.max(0,(rect.top+rect.height/2+(window.scrollY||0))/docH)),selector:el.id?"#"+el.id:tag+(el.className&&typeof el.className==="string"?"."+el.className.trim().split(/\s+/).slice(0,2).join("."):""),viewportWidth:vw,viewportHeight:vh});
-},true);
-
-document.addEventListener("submit",function(e){
-var f=e.target;
-if(!f||f.tagName!=="FORM")return;
-pushEvent("form_submit",{formIdentifier:f.id||f.getAttribute("name")||"form-"+([].indexOf.call(document.forms,f))});
-},true);
-
-window.addEventListener("load",function(){
-setTimeout(function(){
-try{
-var perf=performance.getEntriesByType("navigation")[0];
-if(perf){
-var ev=makeEvent("rum_timing",{loadTimeMs:Math.round(perf.loadEventEnd-perf.startTime),ttfbMs:Math.round(perf.responseStart-perf.startTime),fcpMs:undefined});
-var paintEntries=performance.getEntriesByType("paint");
-for(var i=0;i<paintEntries.length;i++){if(paintEntries[i].name==="first-contentful-paint"){ev.payload.fcpMs=Math.round(paintEntries[i].startTime);break;}}
-buffer.push(ev);
-}
-}catch(e){}
-},2000);
-});
-})();
-</script><script data-htmlpub-forms="">
-(function(){
-var slug="fFy4u1D8qW";
-var api="/forms/submit";
-
-// SYNC: cleanKey/fieldKey/looksLikeRawId/_blocklist/_isInjected/collect must mirror app/src/lib/form-collection-script.ts and app/src/lib/extract-form-fields.ts
-function cleanKey(s){return s.toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,"").substring(0,30);}
-// Raw machine-generated id (Classic field uuid, B4 uuid, compound id-id).
-// Names that look like these are never legitimate field keys — fall through.
-function looksLikeRawId(s){return /^[a-f0-9]{32}$/i.test(s)||/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(s)||/^[a-f0-9]{32}-[A-Za-z0-9_-]{20,40}$/.test(s);}
-function fieldKey(el,idx){
-if(el.name&&!looksLikeRawId(el.name))return el.name;
-if(el.id&&!looksLikeRawId(el.id))return el.id;
-var df=el.getAttribute("data-field")||el.getAttribute("data-name");
-if(df&&!looksLikeRawId(df))return df;
-if(el.placeholder){var ck=cleanKey(el.placeholder);if(ck)return ck;}
-var al=el.getAttribute("aria-label");
-if(al){var ck2=cleanKey(al);if(ck2)return ck2;}
-if(el.id){var lbl=document.querySelector('label[for="'+el.id+'"]');if(lbl&&lbl.textContent){var ck3=cleanKey(lbl.textContent);if(ck3)return ck3;}}
-var par=el.closest?el.closest("label"):null;
-if(par&&par.textContent){var ck4=cleanKey(par.textContent);if(ck4)return ck4;}
-return (el.type||"field")+"_"+idx;
-}
-var _blocklist=/^(lp[_s]?plan|ub[_s]?plan|gtrans|__hstc|__hssc|__hsfp|hutk|_mkto_trk|_biz_uid|_biz_nA|_biz_pendingA|_biz_flagsA|mkt_tok|li_fat_id|_ga|_gid|_fbp|_fbc|_uetsid|_uetvid|mc_cid|mc_eid|_drip_client_|__ss|__ss_referrer|ss_campaign|ss_source|ss_cid|siq_|sq_|_uc_|tl|sl|vote|query|_hp_vid)$/i;
-function _isInjected(el){
-// Skip hidden inputs not present in the original page HTML.
-// Third-party scripts (Customers.ai, HubSpot, etc.) inject hidden fields
-// at runtime. We detect these by checking if they were present at DOMContentLoaded.
-if(el.type==="hidden"&&!el.hasAttribute("data-hp-original"))return true;
-return false;
-}
-function collect(f){
-var d={};
-var els=f.elements||f.querySelectorAll("input,textarea,select");
-var used={};
-var hasVisibleValue=false;
-for(var i=0;i<els.length;i++){
-var el=els[i];
-if(el.type==="file"||el.type==="submit"||el.type==="button")continue;
-if((el.type==="checkbox"||el.type==="radio")&&!el.checked)continue;
-if(_isInjected(el))continue;
-var key=fieldKey(el,i);
-if(_blocklist.test(key))continue;
-if(used[key]){key=key+"_"+i;}
-used[key]=true;
-d[key]=el.value;
-if(el.type!=="hidden"&&el.value&&el.value.trim())hasVisibleValue=true;
-}
-if(!hasVisibleValue)return {};
-return d;
-}
-
-function showMsg(f,ok){
-var m=document.createElement("div");
-m.textContent=ok?"Thank you! Your submission has been received.":"Something went wrong. Please try again.";
-m.style.cssText="padding:12px 16px;margin:8px 0;border-radius:6px;font-family:system-ui,sans-serif;font-size:14px;"+(ok?"background:#f0fdf4;color:#166534;border:1px solid #bbf7d0":"background:#fef2f2;color:#991b1b;border:1px solid #fecaca");
-f.parentNode.insertBefore(m,f.nextSibling);
-setTimeout(function(){m.remove()},5000);
-}
-
-// Post-submit redirect: honor the form's action="..." attribute like a
-// native HTML form submission would, but only AFTER the submission is
-// captured by our relay. Only http(s) absolute URLs and /-relative paths
-// are allowed — javascript:/data:/protocol-relative URLs are rejected so
-// a malicious page author can't run code in the visitor origin via the
-// redirect hop. Container elements from the fake-form path don't have
-// a meaningful action attribute, so this returns null for them.
-// SYNC: mirror with readRedirectUrl in app/src/lib/form-collection-script.ts
-function readRedirectUrl(f){
-if(!f||f.tagName!=="FORM"||!f.getAttribute)return null;
-var raw=f.getAttribute("action");
-if(!raw)return null;
-raw=(raw+"").trim();
-if(!raw||raw==="#")return null;
-if(raw.indexOf("//")===0)return null;
-if(raw.charAt(0)==="/")return raw;
-try{var u=new URL(raw,window.location.href);if(u.protocol==="https:"||u.protocol==="http:")return u.toString();}catch(e){}
-return null;
-}
-
-function formId(f){
-if(f.tagName==="FORM")return f.id||f.getAttribute("name")||"form";
-return f.id||"section-"+([].indexOf.call(document.querySelectorAll("[data-htmlpub-fake-form]"),f));
-}
-function submitData(f,data){
-var btn=f.querySelector("[type=submit],button:not([type])");
-if(btn)btn.disabled=true;
-var redirectUrl=readRedirectUrl(f);
-fetch(api,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({pageSlug:slug,formIdentifier:formId(f),data:data})}).then(function(r){
-if(btn)btn.disabled=false;
-if(r.ok){
-if(redirectUrl){
-// Capture succeeded — navigate the visitor. Skip the in-page
-// success flash since native form submissions don't show one
-// and it would vanish with the page a frame later anyway.
-window.location.href=redirectUrl;
-}else{
-showMsg(f,true);
-if(typeof f.reset==="function")f.reset();
-}
-}else{showMsg(f,false);}
-}).catch(function(){if(btn)btn.disabled=false;showMsg(f,false);});
-}
-
-// Tag all hidden inputs present in the original HTML so we can distinguish
-// them from ones injected later by third-party scripts (Customers.ai, etc.)
-document.querySelectorAll('input[type="hidden"]').forEach(function(el){el.setAttribute("data-hp-original","1");});
-
-document.addEventListener("submit",function(e){
-var f=e.target;
-if(f.tagName!=="FORM")return;
-e.preventDefault();
-submitData(f,collect(f));
-},true);
-
-// --- Fake form interception (inputs outside <form>) --- SYNC
-var lastFakeSubmit=0;
-// Walk up from the clicked element to find a "form-like" container:
-//   - has 1-20 inputs/textareas/selects (excluding hidden/submit/button types)
-//   - has ≤4 button-like descendants (more = page scaffolding, not a form)
-//   - the clicked element sits AFTER the last input in document order
-//     (real submits sit below fields; uses DOCUMENT_POSITION_PRECEDING = 2)
-// Walk depth capped at 3 — further up is <section>, <main>, or <body>.
-function findFormLikeContainer(t){
-var cur=t.parentElement;
-for(var depth=0;cur&&depth<3;depth++){
-if(cur.tagName==="FORM")return null;
-var inputs=cur.querySelectorAll("input:not([type=hidden]):not([type=submit]):not([type=button]),textarea,select");
-if(inputs.length>=1&&inputs.length<=20){
-var ctas=cur.querySelectorAll("button,a[href],[role=button],input[type=submit]");
-if(ctas.length<=4){
-return (t.compareDocumentPosition(inputs[inputs.length-1])&2)?cur:null;
-}
-}
-cur=cur.parentElement;
-}
-return null;
-}
-// <a> with a real href is navigation, never a submit. Allow empty href / "#" /
-// no href (button-styled anchors). <button type="button"> is explicitly non-submit.
-function isPlausibleSubmit(t){
-if(t.tagName==="A"){
-var href=t.getAttribute("href");
-if(href!==null){
-href=(href+"").trim();
-if(href!==""&&href!=="#")return false;
-}
-}
-if(t.tagName==="BUTTON"&&t.getAttribute("type")==="button")return false;
-return true;
-}
-document.addEventListener("click",function(e){
-var t=e.target.closest?e.target.closest("button,a,[role=button],input[type=submit]"):null;
-if(!t)return;
-if(t.closest("form"))return;
-if(!isPlausibleSubmit(t))return;
-var now=Date.now();
-if(now-lastFakeSubmit<2000)return;
-var container=findFormLikeContainer(t);
-if(!container)return;
-var data=collect(container);
-if(Object.keys(data).length===0)return;
-var hasAnyValue=Object.keys(data).some(function(k){return data[k]&&String(data[k]).trim();});
-if(!hasAnyValue)return;
-lastFakeSubmit=now;
-container.setAttribute("data-htmlpub-fake-form","");
-submitData(container,data);
-},true);
-
-// Leadbox/leadbar iframe form bridge. The srcdoc iframe posts a message
-// shaped { type:"htmlpub:iframe-form-submit", formIdentifier, data } and we
-// forward to /forms/submit using this page's slug. SYNC with app/src/lib/form-collection-script.ts.
-window.addEventListener("message",function(e){
-if(!e||!e.data||e.data.type!=="htmlpub:iframe-form-submit")return;
-var fid=String(e.data.formIdentifier||"iframe-form").slice(0,255);
-var raw=e.data.data;
-if(!raw||typeof raw!=="object")return;
-var clean={};
-for(var k in raw){
-if(!Object.prototype.hasOwnProperty.call(raw,k))continue;
-if(looksLikeRawId(k))continue;
-if(_blocklist.test(k))continue;
-clean[k]=raw[k];
-}
-fetch(api,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({pageSlug:slug,formIdentifier:fid,data:clean})}).catch(function(){});
-},false);
-})();
-</script><script>
+<!-- htmlpub-analytics + htmlpub-forms scripts removed (unused service) -->
+<script>
 gtag('event', 'conversion', {'send_to': 'AW-16851548206/purchase'});
 gtag('event', 'purchase', {'send_to': 'G-7JPCVJW800'});
 </script></body></html>
