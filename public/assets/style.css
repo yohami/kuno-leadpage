@@ -430,6 +430,13 @@ nav {
    parent needs room for the wider layout. Scoped so other .cta-
    section instances keep their 700px readability. */
 #get .cta-inner { max-width: 1200px; }
+/* Bulletproof: ANY .cta-inner containing a .pricing-grid needs the
+   wide layout, regardless of section id or which CSS file loaded.
+   Works alongside the #get rule above; :has() is well-supported
+   (Chrome 105+, Safari 15.4+, Firefox 121+). Prevents a repeat of
+   the "old cached style.css served pre-override rule → 3 boxes get
+   crushed at 700px" bug that shipped Jul 15. */
+.cta-inner:has(.pricing-grid) { max-width: 1200px !important; }
 /* Pricing grid stacks below 900px so the three cards don't crush
    into unreadable columns on tablet/phone. */
 @media (max-width: 900px) {

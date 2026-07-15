@@ -958,7 +958,12 @@ window.addEventListener('DOMContentLoaded', () => {
 
 <section class="cta-section" id="get">
   <div class="cta-bg"></div>
-  <div class="cta-inner">
+  <!-- Inline max-width is a belt-and-suspenders backup to the
+       #get .cta-inner + .cta-inner:has(.pricing-grid) rules in
+       style.css. If a stale style.css gets served (CDN cache, old
+       browser, whatever), this inline value still gives the 3-card
+       grid room to breathe. -->
+  <div class="cta-inner" style="max-width: 1200px;">
     <div class="cta-eyebrow"><span style="font-size: 13px;"><span style="font-size: 15px;"><span style="color: rgb(23, 97, 131);"><span style="font-size: 19px;">Still reading?</span></span></span></span></div>
     <h2 class="cta-heading" style="color: rgb(23, 97, 131);"><span style="color: rgb(192, 0, 0);">Get<br>the Full<br>System.</span></h2>
     <p class="cta-text">The gap between where you are and where you need to be — closed. Forever.</p>
