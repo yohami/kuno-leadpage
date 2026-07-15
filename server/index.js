@@ -14,8 +14,22 @@ app.use(express.json());
 // the Meta CAPI Purchase event fired from circle.ku-no.com webhook.
 app.set('trust proxy', true);
 
-// Serve static files from public/
-app.use(express.static(path.join(__dirname, '../public'), { extensions: ['html'] }));
+// Serve static files from public/.
+// Short cache on CSS + JS so iterations to the leadpage's styles/
+// inline scripts land in browsers within minutes, not hours. The
+// previous default (Cloudflare's edge default of max-age=14400 = 4h)
+// meant a style change wouldn't be visible until the buyer either
+// hard-refreshed or waited half a day — surfaced Jul 15 when the
+// ebook button rendered pre-change styling for a few hours after
+// deploy. Images / fonts / videos keep the default long cache.
+app.use(express.static(path.join(__dirname, '../public'), {
+  extensions: ['html'],
+  setHeaders: (res, filePath) => {
+    if (/\.(css|js)$/i.test(filePath)) {
+      res.setHeader('Cache-Control', 'public, max-age=300, must-revalidate');
+    }
+  },
+}));
 
 // Checkout session creation
 app.post('/api/checkout/create-session', async (req, res) => {
