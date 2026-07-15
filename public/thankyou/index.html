@@ -489,13 +489,13 @@ a{color:inherit;text-decoration:none}
   lpTrack('init', { snippetKey: 'dest_Ab3CUqG96kq9' });
 </script>
 
-<!-- Conversion event -->
+<!-- Conversion event — value/currency filled dynamically once we've
+     resolved the session amount below (Meta Pixel + lpTrack both
+     fire from the same fetch response). Placeholder fires only if
+     the fetch fails / times out so we don't lose the conversion. -->
 <script>
-  lpTrack('conversion', {
-    type: 'custom',
-    value: 47,
-    currency: 'USD'
-  });
+  // Kept as no-op here; the real lpTrack call lives in the Meta
+  // Pixel script below so both use the same session-details fetch.
 </script><script async src="https://www.googletagmanager.com/gtag/js?id=G-7JPCVJW800"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-7JPCVJW800");</script><script type="text/javascript">(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y)})(window,document,"clarity","script","wsmaougu19");</script><!-- Meta Pixel Code -->
 <script>
 !function(f,b,e,v,n,t,s)
@@ -515,33 +515,60 @@ fbq('track', 'PageView');
 //   - Advanced Matching (hashed email + name) — fetched from the
 //     server after we look up the Stripe session by id. Bumps Meta
 //     match quality from Fair to Good/Great.
-// Fetch has a 3s timeout: if it's slow, fire without matching so
-// we don't lose the event when a buyer closes the tab early. Meta
-// hashes em/fn/ln client-side with SHA-256 before sending.
+//   - value + currency — pulled from the same session-details
+//     response so the amount reflects what Stripe actually charged
+//     (was hardcoded $47; ebook price is now $97; keeping a
+//     hardcoded default here would silently misreport every sale).
+//   - lpTrack Leadpages conversion fires from the same handler so
+//     it also uses the real amount.
+// Fetch has a 3s timeout: if it's slow, fire without matching /
+// with no value so we don't lose the event when a buyer closes
+// the tab early. Meta hashes em/fn/ln client-side with SHA-256
+// before sending.
 (function () {
   var PIXEL_ID = '3466139423544608';
   var sid = new URLSearchParams(location.search).get('session_id');
-  var params = {value: 47.00, currency: 'USD'};
   if (!sid) {
     // Buyer landed via direct link / refresh / cleared URL. Fire
-    // without dedup — better than dropping the event.
-    fbq('track', 'Purchase', params);
+    // without dedup + without value — better than dropping the
+    // event or reporting a wrong amount.
+    fbq('track', 'Purchase', {
+      currency: 'USD',
+      content_name: 'KU/NO Ebook',
+      content_type: 'product',
+      content_ids: ['ku-no'],
+    });
+    if (typeof lpTrack === 'function') lpTrack('conversion', {type: 'custom', currency: 'USD'});
     return;
   }
 
   var fired = false;
-  function firePurchase(matching) {
+  function firePurchase(matching, amount, currency) {
     if (fired) return;
     fired = true;
+    // /thankyou only handles the ebook purchase — combo + VIP Annual
+    // redirect to circle.ku-no.com/order/thanks after Stripe checkout
+    // where the app fires their own Purchase pixel with the correct
+    // content_name/type/ids. Hardcode ebook here.
+    var params = {
+      currency: (currency || 'USD').toUpperCase(),
+      content_name: 'KU/NO Ebook',
+      content_type: 'product',
+      content_ids: ['ku-no'],
+    };
+    if (typeof amount === 'number' && amount > 0) params.value = amount;
     if (matching && (matching.em || matching.fn || matching.ln)) {
       // Re-init the pixel with matching so THIS event (and any
       // subsequent ones on this page) carries hashed identity.
       fbq('init', PIXEL_ID, matching);
     }
     fbq('track', 'Purchase', params, {eventID: sid});
+    if (typeof lpTrack === 'function') {
+      lpTrack('conversion', {type: 'custom', value: params.value, currency: params.currency});
+    }
   }
 
-  var timeoutId = setTimeout(function () { firePurchase(null); }, 3000);
+  var timeoutId = setTimeout(function () { firePurchase(null, null, 'USD'); }, 3000);
   fetch('/api/checkout/session-details?id=' + encodeURIComponent(sid))
     .then(function (r) { return r.ok ? r.json() : null; })
     .then(function (data) {
@@ -553,11 +580,13 @@ fbq('track', 'PageView');
         if (parts[0]) matching.fn = parts[0].toLowerCase();
         if (parts.length > 1) matching.ln = parts.slice(1).join(' ').toLowerCase();
       }
-      firePurchase(matching);
+      var amount = data && typeof data.amount === 'number' ? data.amount : null;
+      var currency = (data && data.currency) || 'USD';
+      firePurchase(matching, amount, currency);
     })
     .catch(function () {
       clearTimeout(timeoutId);
-      firePurchase(null);
+      firePurchase(null, null, 'USD');
     });
 })();
 </script>
@@ -580,7 +609,7 @@ src="https://www.facebook.com/tr?id=3466139423544608&ev=Purchase&noscript=1"
   <div class="ku-upsell-inner" style=""><img src="/assets/hardcover.png" alt="KU/NO Hardcover" style="width: 220px; height: auto; margin: 0px auto 2rem; display: block; box-shadow: rgba(0, 0, 0, 0.15) 0px 8px 32px;">
     <div class="ku-upsell-tag" style="">One-time offer</div>
     <div class="ku-upsell-heading" style=""><span style="color: rgb(192, 0, 0);">FEEL IT IN YOUR HANDS</span></div>
-    <p class="ku-upsell-sub" style="">The ebook is yours. But there's something different about holding this in your hands — 587 pages, hardcover, printed on demand. The kind of book you keep on your shelf and come back to.</p>
+    <p class="ku-upsell-sub" style="">The ebook is yours. But there's something different about holding this in your hands — 592 pages, hardcover, printed on demand. The kind of book you keep on your shelf and come back to.</p>
     <div class="ku-upsell-price" style="">
       <span class="ku-upsell-amount" style="">$97</span>
       

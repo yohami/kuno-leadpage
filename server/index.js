@@ -95,7 +95,16 @@ app.get('/api/checkout/session-details', async (req, res) => {
       || (session.customer_details && session.customer_details.email)
       || null;
     const name = (session.customer_details && session.customer_details.name) || null;
-    res.json({ email: email, name: name });
+    // amount_total is in the smallest currency unit (cents for USD).
+    // Returned so /thankyou can fire pixel Purchase + lpTrack
+    // conversion with the ACTUAL amount charged — instead of the
+    // stale $47 hardcoded value that stayed on the page after the
+    // ebook price bumped to $97.
+    const amount = typeof session.amount_total === 'number'
+      ? session.amount_total / 100
+      : null;
+    const currency = session.currency || 'usd';
+    res.json({ email: email, name: name, amount: amount, currency: currency });
   } catch (err) {
     console.error('SESSION DETAILS ERROR:', err.message);
     res.status(500).json({ error: err.message });

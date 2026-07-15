@@ -426,6 +426,15 @@ nav {
 }
 .cta-bg { display: none; }
 .cta-inner { position: relative; max-width: 700px; margin: 0 auto; }
+/* When the /get section renders the 3-column pricing grid, the
+   parent needs room for the wider layout. Scoped so other .cta-
+   section instances keep their 700px readability. */
+#get .cta-inner { max-width: 1200px; }
+/* Pricing grid stacks below 900px so the three cards don't crush
+   into unreadable columns on tablet/phone. */
+@media (max-width: 900px) {
+  .pricing-grid { grid-template-columns: 1fr !important; max-width: 480px !important; }
+}
 .cta-eyebrow {
   font-family: var(--mono);
   font-size: 0.65rem;
