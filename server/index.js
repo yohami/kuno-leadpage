@@ -3,8 +3,20 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const cors = require('cors');
 const path = require('path');
 
+// Kept for legacy reference — subscribe now writes to Supabase
+// (see /api/subscribe). Removing these envs from Railway is safe.
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const RESEND_AUDIENCE_ID = process.env.RESEND_AUDIENCE_ID;
+
+// Newsletter subscribers land in circle.ku-no.com's `pending_credits`
+// table (email, credits). The weekly-digest cron in the circle app
+// unions profiles.email + pending_credits.email — dropping a row here
+// with credits=0 enrolls the email in Friday's dispatch without
+// granting any credit balance. SUPABASE_URL is the public project URL
+// (https://<ref>.supabase.co); SERVICE_ROLE_KEY bypasses RLS so this
+// server can insert without an authed session.
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const app = express();
 app.use(cors());
@@ -125,21 +137,53 @@ app.get('/api/checkout/session-details', async (req, res) => {
   }
 });
 
-// Subscribe
+// Subscribe — writes the email into circle.ku-no.com's `pending_credits`
+// table so it joins the Friday digest recipient pool. Previously mirrored
+// to a Resend audience; that had no consumer wired up (the digest is
+// authored + sent from the circle app, not Resend broadcasts).
+//
+// Uses PostgREST `Prefer: resolution=ignore-duplicates` — a pure
+// newsletter signup carries credits=0, and we never want to clobber an
+// existing lead row that already has real credits granted (e.g. Meta
+// CAPI cold-lead from an ebook purchase, or a Mighty Networks import).
 app.post('/api/subscribe', async (req, res) => {
   try {
     const { email } = req.body;
-    if (!email) return res.status(400).json({ error: 'Email required' });
-    const response = await fetch('https://api.resend.com/audiences/' + RESEND_AUDIENCE_ID + '/contacts', {
+    if (!email || typeof email !== 'string') {
+      return res.status(400).json({ error: 'Email required' });
+    }
+    const clean = email.trim().toLowerCase();
+    if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(clean)) {
+      return res.status(400).json({ error: 'Invalid email' });
+    }
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+      console.error('SUBSCRIBE: SUPABASE env not configured');
+      return res.status(500).json({ error: 'Server not configured' });
+    }
+    // `?on_conflict=email` is required for PostgREST to actually apply
+    // `resolution=ignore-duplicates` — without it, a repeat signup with
+    // an existing email 500s with a unique-violation instead of being
+    // silently absorbed.
+    const resp = await fetch(SUPABASE_URL + '/rest/v1/pending_credits?on_conflict=email', {
       method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + RESEND_API_KEY, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email, unsubscribed: false })
+      headers: {
+        'apikey': SUPABASE_SERVICE_ROLE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_SERVICE_ROLE_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=ignore-duplicates,return=minimal',
+      },
+      body: JSON.stringify({ email: clean, credits: 0 }),
     });
-    const data = await response.json();
-    if (!response.ok) return res.status(400).json({ error: data.message || 'Failed to subscribe' });
+    // 201 = inserted, 200 = existed and ignored — both are "you're on
+    // the list" from the user's POV. Anything else is a real failure.
+    if (!resp.ok) {
+      const text = await resp.text();
+      console.error('SUBSCRIBE ERROR:', resp.status, text);
+      return res.status(500).json({ error: 'Subscribe failed' });
+    }
     res.json({ success: true });
   } catch (err) {
-    console.error(err.message);
+    console.error('SUBSCRIBE ERROR:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
