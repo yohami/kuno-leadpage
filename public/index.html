@@ -87,7 +87,7 @@ function trackCTA(gtagEvent, fbqEvent, fbqParams) {
   "image": "https://ku-no.com/assets/og-image.jpg",
   "offers": {
     "@type": "Offer",
-    "price": "97.00",
+    "price": "67.00",
     "priceCurrency": "USD",
     "availability": "https://schema.org/InStock"
   }
@@ -103,7 +103,7 @@ function trackCTA(gtagEvent, fbqEvent, fbqParams) {
     <div class="nav-logo"><img src="/assets/LOGO.svg" alt="KU/NO" style="height: 32px; width: auto; display: block;"></div>
     <span id="nav-section" style="font-family: 'IBM Plex Mono', monospace; font-size: 0.55rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgb(23,97,131); opacity: 0; transition: opacity 0.4s ease;"></span>
   </div>
-  <a href="/#get" class="btn-primary" onclick="trackCTA('click_get_it_now','AddToCart',{content_name:'KU/NO Offers',content_type:'product',value:97,currency:'USD'})" style="padding: 0.65rem 1.5rem; background: rgb(23, 97, 131) !important;">GET IT NOW</a>
+  <a href="/#get" class="btn-primary" onclick="trackCTA('click_get_it_now','AddToCart',{content_name:'KU/NO Offers',content_type:'product',value:67,currency:'USD'})" style="padding: 0.65rem 1.5rem; background: rgb(23, 97, 131) !important;">GET IT NOW</a>
 </nav>
 
 <div class="hero">
@@ -322,83 +322,11 @@ window.addEventListener('DOMContentLoaded', () => {
 
 <section id="hero-pricing" style="background:#fff;border-bottom:1px solid rgba(23,97,131,0.2);padding:3rem 2.5rem;">
   <div style="max-width:1200px;margin:0 auto;text-align:center;">
-    <div style="font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.25em;text-transform:uppercase;color:rgb(23,97,131);margin-bottom:1rem;">Ebook · Hardcover Combo · VIP Annual</div>
-
-    <!-- 3-column pricing grid, same shape/style as the /get section
-         below. Kept as inline styles so this leadpage stays a single
-         self-contained HTML file. Button IDs use the no-suffix form
-         (btn-buy-ebook, btn-combo, btn-vip-annual); the /get section
-         mirrors them with the -2 suffix. -->
-    <div class="pricing-grid" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.25rem;max-width:1100px;margin:1.5rem auto 0;text-align:left;">
-
-      <!-- Ebook card -->
-      <div style="background:#fff;border:2px solid rgb(23,97,131);border-radius:6px;padding:1.75rem 1.5rem;display:flex;flex-direction:column;position:relative;box-shadow:0 12px 30px rgba(23,97,131,0.12);">
-        <div style="position:absolute;top:-0.75rem;left:50%;transform:translateX(-50%);background:rgb(23,97,131);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;padding:0.35rem 0.75rem;border-radius:4px;white-space:nowrap;">★ Starter</div>
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.25em;text-transform:uppercase;color:rgb(23,97,131);margin-bottom:0.5rem;text-align:center;">Ebook</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:4rem;line-height:1;font-weight:700;color:rgb(23,97,131);margin-bottom:0.25rem;text-align:center;"><span data-countup="97" data-prefix="$">$97</span></div>
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(0,0,0,0.5);margin-bottom:1.25rem;text-align:center;">One-time · Instant download</div>
-        <ul style="list-style:none;padding:0;margin:0 0 1.5rem;flex:1;">
-          <li style="margin-bottom:0.65rem;font-family:'IBM Plex Sans',sans-serif;font-size:0.9rem;line-height:1.4;color:#333;text-align:center;"><span style="color:rgb(23,97,131);font-weight:700;margin-right:0.4rem;">✓</span>592 pages, the complete system</li>
-          <li style="margin-bottom:0.65rem;font-family:'IBM Plex Sans',sans-serif;font-size:0.9rem;line-height:1.4;color:#333;text-align:center;"><span style="color:rgb(23,97,131);font-weight:700;margin-right:0.4rem;">✓</span>Instant delivery to your inbox</li>
-          <li style="margin-bottom:0.65rem;font-family:'IBM Plex Sans',sans-serif;font-size:0.9rem;line-height:1.4;color:#333;text-align:center;"><span style="color:rgb(23,97,131);font-weight:700;margin-right:0.4rem;">✓</span>Read on any device</li>
-          <li style="margin-bottom:0.65rem;font-family:'IBM Plex Sans',sans-serif;font-size:0.9rem;line-height:1.4;color:#333;text-align:center;"><span style="color:rgb(23,97,131);font-weight:700;margin-right:0.4rem;">✓</span>No account needed</li>
-        </ul>
-        <a href="#" id="btn-buy-ebook" data-checkout="" data-price-id="price_1Tt9wiD1kWb245oCNLk9NfU6" data-product-name="KU/NO Ebook" data-mode="payment" data-success-url="https://ku-no.com/thankyou" target="_blank" rel="noopener" class="btn-cta" onclick="trackCTA('click_buy_ebook','InitiateCheckout',{content_name:'KU/NO Ebook',content_type:'product',content_ids:['ku-no'],value:97,currency:'USD'})" style="display:block;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;padding:1rem;background:rgb(23,97,131);color:#fff;text-decoration:none;text-align:center;border-radius:4px;"><span>Get the ebook</span></a>
-      </div>
-
-      <!-- Combo card -->
-      <div style="background:#fff;border:2px solid #C00000;border-radius:6px;padding:1.75rem 1.5rem;display:flex;flex-direction:column;position:relative;box-shadow:0 12px 30px rgba(192,0,0,0.12);">
-        <div style="position:absolute;top:-0.75rem;left:50%;transform:translateX(-50%);background:#C00000;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;padding:0.35rem 0.75rem;border-radius:4px;white-space:nowrap;">★ Best Selling</div>
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.25em;text-transform:uppercase;color:#C00000;margin-bottom:0.5rem;text-align:center;">Hardcover + Course + Community</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:4rem;line-height:1;font-weight:700;color:#C00000;margin-bottom:0.25rem;text-align:center;"><span data-countup="297" data-prefix="$">$297</span></div>
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(0,0,0,0.5);margin-bottom:1.25rem;text-align:center;">One-time · Ships worldwide</div>
-        <ul style="list-style:none;padding:0;margin:0 0 1.5rem;flex:1;">
-          <li style="margin-bottom:0.65rem;font-family:'IBM Plex Sans',sans-serif;font-size:0.9rem;line-height:1.4;color:#333;text-align:center;"><span style="color:#C00000;font-weight:700;margin-right:0.4rem;">✓</span>KU/NO premium hardcover, free shipping worldwide</li>
-          <li style="margin-bottom:0.65rem;font-family:'IBM Plex Sans',sans-serif;font-size:0.9rem;line-height:1.4;color:#333;text-align:center;"><span style="color:#C00000;font-weight:700;margin-right:0.4rem;">✓</span>Lifetime access to the complete KU/NO digital course</li>
-          <li style="margin-bottom:0.65rem;font-family:'IBM Plex Sans',sans-serif;font-size:0.9rem;line-height:1.4;color:#333;text-align:center;"><span style="color:#C00000;font-weight:700;margin-right:0.4rem;">✓</span>30-day VIP Membership included</li>
-        </ul>
-        <!-- Value stack: anchors the $297 price against the à-la-carte
-             total of the same components. Priced against live Stripe
-             values (hardcover $147, VIP $249/mo) + a defensible retail
-             tag on the lifetime course ($497). Reader mentally lands
-             on $893 before seeing $297 = the anchor effect. -->
-        <div style="margin:0 0 1rem;padding:0.85rem 1rem;border:1px dashed rgba(192,0,0,0.4);border-radius:4px;background:rgba(192,0,0,0.03);font-family:'IBM Plex Mono',monospace;font-size:0.65rem;letter-spacing:0.06em;text-transform:uppercase;color:rgba(0,0,0,0.7);line-height:1.9;">
-          <div style="display:flex;justify-content:space-between;"><span>KU/NO Hardcover</span><span style="color:#C00000;">$147</span></div>
-          <div style="display:flex;justify-content:space-between;"><span>Complete course</span><span style="color:#C00000;">$497</span></div>
-          <div style="display:flex;justify-content:space-between;"><span>30-day VIP</span><span style="color:#C00000;">$249</span></div>
-          <div style="display:flex;justify-content:space-between;margin-top:0.4rem;padding-top:0.4rem;border-top:1px solid rgba(192,0,0,0.3);color:#111;font-weight:700;"><span>Total value</span><span style="color:#C00000;">$893</span></div>
-        </div>
-        <a href="https://circle.ku-no.com/order/ku-no-hardcover-combo?src=leadpage" id="btn-combo" rel="noopener" class="btn-cta kuno-hardcover-link" onclick="trackCTA('click_combo','InitiateCheckout',{content_name:'KU/NO Hardcover Combo',content_type:'product',content_ids:['ku-no-hardcover-combo'],value:297,currency:'USD'})" style="display:block;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;padding:1rem;background:#C00000;color:#fff;text-decoration:none;text-align:center;border-radius:4px;"><span>Get the system</span></a>
-      </div>
-
-      <!-- VIP Annual card -->
-      <div style="background:#fff;border:2px solid rgb(23,97,131);border-radius:6px;padding:1.75rem 1.5rem;display:flex;flex-direction:column;position:relative;box-shadow:0 12px 30px rgba(23,97,131,0.12);">
-        <div style="position:absolute;top:-0.75rem;left:50%;transform:translateX(-50%);background:rgb(23,97,131);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;padding:0.35rem 0.75rem;border-radius:4px;white-space:nowrap;">★ Top Tier</div>
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.25em;text-transform:uppercase;color:rgb(23,97,131);margin-bottom:0.5rem;text-align:center;">VIP Annual</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:4rem;line-height:1;font-weight:700;color:rgb(23,97,131);margin-bottom:0.25rem;text-align:center;"><span data-countup="2497" data-prefix="$">$2497</span><span style="font-size:1rem;color:rgba(23,97,131,0.55);">/yr</span></div>
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(0,0,0,0.5);margin-bottom:1.25rem;text-align:center;">Yearly · Save $491 vs monthly</div>
-        <ul style="list-style:none;padding:0;margin:0 0 1.5rem;flex:1;">
-          <li style="margin-bottom:0.65rem;font-family:'IBM Plex Sans',sans-serif;font-size:0.9rem;line-height:1.4;color:#333;text-align:center;"><span style="color:rgb(23,97,131);font-weight:700;margin-right:0.4rem;">✓</span>KU/NO premium hardcover</li>
-          <li style="margin-bottom:0.65rem;font-family:'IBM Plex Sans',sans-serif;font-size:0.9rem;line-height:1.4;color:#333;text-align:center;"><span style="color:rgb(23,97,131);font-weight:700;margin-right:0.4rem;">✓</span>Full year of VIP tier</li>
-          <li style="margin-bottom:0.65rem;font-family:'IBM Plex Sans',sans-serif;font-size:0.9rem;line-height:1.4;color:#333;text-align:center;"><span style="color:rgb(23,97,131);font-weight:700;margin-right:0.4rem;">✓</span>400 KUNOBOT credits every month</li>
-          <li style="margin-bottom:0.65rem;font-family:'IBM Plex Sans',sans-serif;font-size:0.9rem;line-height:1.4;color:#333;text-align:center;"><span style="color:rgb(23,97,131);font-weight:700;margin-right:0.4rem;">✓</span>Weekly small-group deep-dive calls</li>
-          <li style="margin-bottom:0.65rem;font-family:'IBM Plex Sans',sans-serif;font-size:0.9rem;line-height:1.4;color:#333;text-align:center;"><span style="color:rgb(23,97,131);font-weight:700;margin-right:0.4rem;">✓</span>Priority voice-note feedback + AMAs</li>
-        </ul>
-        <a href="https://circle.ku-no.com/order/vip-annual?src=leadpage" id="btn-vip-annual" rel="noopener" class="btn-cta" onclick="trackCTA('click_vip_annual','InitiateCheckout',{content_name:'VIP Annual',content_type:'subscription',content_ids:['vip_annual'],value:2497,currency:'USD'})" style="display:block;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;padding:1rem;background:rgb(23,97,131);color:#fff;text-decoration:none;text-align:center;border-radius:4px;"><span>Get vip</span></a>
-      </div>
-
-    </div>
-
-    <!-- Trust bar: minimal reassurance strip directly under the
-         pricing cards. Sits at the decision moment. Kept as a
-         single centered line with mono dots so the mobile fallback
-         wraps gracefully instead of stacking as a bulleted list. -->
-    <div style="margin-top:1.5rem;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(0,0,0,0.55);">
-      Free shipping worldwide <span style="opacity:0.35;margin:0 0.75rem;">·</span> Secure checkout via Stripe <span style="opacity:0.35;margin:0 0.75rem;">·</span> Cancel VIP anytime
-    </div>
-
-    <!-- Personality Test — secondary CTA below the pricing boxes. -->
-    <div style="margin-top:2rem;">
+    <!-- Personality Test — sole CTA in the hero. The 3-tier grid
+         that used to live here got moved into the mid-page + /get
+         sections; the hero funnels straight into the personality
+         test as the top-of-funnel entry point. -->
+    <div>
       <a href="/personalitytest" target="_blank" rel="noopener" class="btn-cta btn-outline" style="position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:0.7rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;padding:1rem 2rem;background:transparent;color:rgb(23,97,131);border:1px solid rgb(23,97,131);text-decoration:none;text-align:center;" onclick="trackCTA('click_take_test','ViewContent',{content_name:'Personality Test'})"><span class="btn-outline-text">Take the Personality Test</span></a>
     </div>
   </div>
@@ -601,7 +529,7 @@ window.addEventListener('DOMContentLoaded', () => {
       <div style="background:#fff;border:2px solid rgb(23,97,131);border-radius:6px;padding:1.75rem 1.5rem;display:flex;flex-direction:column;position:relative;box-shadow:0 12px 30px rgba(23,97,131,0.12);">
         <div style="position:absolute;top:-0.75rem;left:50%;transform:translateX(-50%);background:rgb(23,97,131);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;padding:0.35rem 0.75rem;border-radius:4px;white-space:nowrap;">★ Starter</div>
         <div style="font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.25em;text-transform:uppercase;color:rgb(23,97,131);margin-bottom:0.5rem;text-align:center;">Ebook</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:4rem;line-height:1;font-weight:700;color:rgb(23,97,131);margin-bottom:0.25rem;text-align:center;"><span data-countup="97" data-prefix="$">$97</span></div>
+        <div style="text-align:center;margin-bottom:0.25rem;"><div style="display:inline-block;position:relative;font-family:'Bebas Neue',sans-serif;font-size:4rem;line-height:1;font-weight:700;color:rgb(23,97,131);"><span style="position:absolute;right:calc(100% + 0.5rem);top:50%;transform:translateY(-50%);font-family:'IBM Plex Sans',sans-serif;font-size:1.1rem;font-weight:400;color:#999;text-decoration:line-through;white-space:nowrap;">$97</span><span data-countup="67" data-prefix="$">$67</span></div></div>
         <div style="font-family:'IBM Plex Mono',monospace;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(0,0,0,0.5);margin-bottom:1.25rem;text-align:center;">One-time · Instant download</div>
         <ul style="list-style:none;padding:0;margin:0 0 1.5rem;flex:1;">
           <li style="margin-bottom:0.65rem;font-family:'IBM Plex Sans',sans-serif;font-size:0.9rem;line-height:1.4;color:#333;text-align:center;"><span style="color:rgb(23,97,131);font-weight:700;margin-right:0.4rem;">✓</span>592 pages, the complete system</li>
@@ -609,7 +537,7 @@ window.addEventListener('DOMContentLoaded', () => {
           <li style="margin-bottom:0.65rem;font-family:'IBM Plex Sans',sans-serif;font-size:0.9rem;line-height:1.4;color:#333;text-align:center;"><span style="color:rgb(23,97,131);font-weight:700;margin-right:0.4rem;">✓</span>Read on any device</li>
           <li style="margin-bottom:0.65rem;font-family:'IBM Plex Sans',sans-serif;font-size:0.9rem;line-height:1.4;color:#333;text-align:center;"><span style="color:rgb(23,97,131);font-weight:700;margin-right:0.4rem;">✓</span>No account needed</li>
         </ul>
-        <a href="#" id="btn-buy-ebook-3" data-checkout="" data-price-id="price_1Tt9wiD1kWb245oCNLk9NfU6" data-product-name="KU/NO Ebook" data-mode="payment" data-success-url="https://ku-no.com/thankyou" target="_blank" rel="noopener" class="btn-cta" onclick="trackCTA('click_buy_ebook','InitiateCheckout',{content_name:'KU/NO Ebook',content_type:'product',content_ids:['ku-no'],value:97,currency:'USD'})" style="display:block;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;padding:1rem;background:rgb(23,97,131);color:#fff;text-decoration:none;text-align:center;border-radius:4px;"><span>Get the ebook</span></a>
+        <a href="#" id="btn-buy-ebook-3" data-checkout="" data-price-id="price_1Tv2AZD1kWb245oC6bGVhJML" data-product-name="KU/NO Ebook" data-mode="payment" data-success-url="https://ku-no.com/thankyou" target="_blank" rel="noopener" class="btn-cta" onclick="trackCTA('click_buy_ebook','InitiateCheckout',{content_name:'KU/NO Ebook',content_type:'product',content_ids:['ku-no'],value:67,currency:'USD'})" style="display:block;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;padding:1rem;background:rgb(23,97,131);color:#fff;text-decoration:none;text-align:center;border-radius:4px;"><span>Get the ebook</span></a>
       </div>
 
       <!-- Combo card -->
@@ -656,9 +584,6 @@ window.addEventListener('DOMContentLoaded', () => {
     </div>
 
     <!-- Trust bar under mid-page grid — mirrors the hero + /get ones. -->
-    <div style="margin-top:1.5rem;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(0,0,0,0.55);">
-      Free shipping worldwide <span style="opacity:0.35;margin:0 0.75rem;">·</span> Secure checkout via Stripe <span style="opacity:0.35;margin:0 0.75rem;">·</span> Cancel VIP anytime
-    </div>
   </div>
 </section>
 
@@ -975,7 +900,7 @@ window.addEventListener('DOMContentLoaded', () => {
       <div style="background:#fff;border:2px solid rgb(23,97,131);border-radius:6px;padding:1.75rem 1.5rem;display:flex;flex-direction:column;position:relative;box-shadow:0 12px 30px rgba(23,97,131,0.12);">
         <div style="position:absolute;top:-0.75rem;left:50%;transform:translateX(-50%);background:rgb(23,97,131);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;padding:0.35rem 0.75rem;border-radius:4px;white-space:nowrap;">★ Starter</div>
         <div style="font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.25em;text-transform:uppercase;color:rgb(23,97,131);margin-bottom:0.5rem;text-align:center;">Ebook</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:4rem;line-height:1;font-weight:700;color:rgb(23,97,131);margin-bottom:0.25rem;text-align:center;"><span data-countup="97" data-prefix="$">$97</span></div>
+        <div style="text-align:center;margin-bottom:0.25rem;"><div style="display:inline-block;position:relative;font-family:'Bebas Neue',sans-serif;font-size:4rem;line-height:1;font-weight:700;color:rgb(23,97,131);"><span style="position:absolute;right:calc(100% + 0.5rem);top:50%;transform:translateY(-50%);font-family:'IBM Plex Sans',sans-serif;font-size:1.1rem;font-weight:400;color:#999;text-decoration:line-through;white-space:nowrap;">$97</span><span data-countup="67" data-prefix="$">$67</span></div></div>
         <div style="font-family:'IBM Plex Mono',monospace;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(0,0,0,0.5);margin-bottom:1.25rem;text-align:center;">One-time · Instant download</div>
         <ul style="list-style:none;padding:0;margin:0 0 1.5rem;flex:1;">
           <li style="margin-bottom:0.65rem;font-family:'IBM Plex Sans',sans-serif;font-size:0.9rem;line-height:1.4;color:#333;text-align:center;"><span style="color:rgb(23,97,131);font-weight:700;margin-right:0.4rem;">✓</span>592 pages, the complete system</li>
@@ -983,7 +908,7 @@ window.addEventListener('DOMContentLoaded', () => {
           <li style="margin-bottom:0.65rem;font-family:'IBM Plex Sans',sans-serif;font-size:0.9rem;line-height:1.4;color:#333;text-align:center;"><span style="color:rgb(23,97,131);font-weight:700;margin-right:0.4rem;">✓</span>Read on any device</li>
           <li style="margin-bottom:0.65rem;font-family:'IBM Plex Sans',sans-serif;font-size:0.9rem;line-height:1.4;color:#333;text-align:center;"><span style="color:rgb(23,97,131);font-weight:700;margin-right:0.4rem;">✓</span>No account needed</li>
         </ul>
-        <a href="#" id="btn-buy-ebook-2" data-checkout="" data-price-id="price_1Tt9wiD1kWb245oCNLk9NfU6" data-product-name="KU/NO Ebook" data-mode="payment" data-success-url="https://ku-no.com/thankyou" target="_blank" rel="noopener" class="btn-cta" onclick="trackCTA('click_buy_ebook','InitiateCheckout',{content_name:'KU/NO Ebook',content_type:'product',content_ids:['ku-no'],value:97,currency:'USD'})" style="display:block;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;padding:1rem;background:rgb(23,97,131);color:#fff;text-decoration:none;text-align:center;border-radius:4px;"><span>Get the ebook</span></a>
+        <a href="#" id="btn-buy-ebook-2" data-checkout="" data-price-id="price_1Tv2AZD1kWb245oC6bGVhJML" data-product-name="KU/NO Ebook" data-mode="payment" data-success-url="https://ku-no.com/thankyou" target="_blank" rel="noopener" class="btn-cta" onclick="trackCTA('click_buy_ebook','InitiateCheckout',{content_name:'KU/NO Ebook',content_type:'product',content_ids:['ku-no'],value:67,currency:'USD'})" style="display:block;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;padding:1rem;background:rgb(23,97,131);color:#fff;text-decoration:none;text-align:center;border-radius:4px;"><span>Get the ebook</span></a>
       </div>
 
       <!-- Combo card (recommended) -->
@@ -1030,9 +955,6 @@ window.addEventListener('DOMContentLoaded', () => {
     </div>
 
     <!-- Trust bar under /get grid — mirrors the hero-pricing one. -->
-    <div style="margin-top:1.5rem;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(0,0,0,0.55);">
-      Free shipping worldwide <span style="opacity:0.35;margin:0 0.75rem;">·</span> Secure checkout via Stripe <span style="opacity:0.35;margin:0 0.75rem;">·</span> Cancel VIP anytime
-    </div>
 
   <p class="cta-note" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 1.5rem;">JOIN THE COMMUNITY — <a href="https://circle.ku-no.com/" target="_blank" rel="noopener noreferrer" style="color: rgb(192, 0, 0);"><b>CIRCLE.KU-NO.COM</b></a> — SEE YOU ON THE OTHER SIDE.</p></div>
 </section>
